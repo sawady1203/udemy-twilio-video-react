@@ -19,6 +19,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:twilio": "react-scripts build && mv build/* ../video-call/assets || move ../video-call/assets",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

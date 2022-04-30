@@ -11,6 +11,20 @@ exports.handler = function (context, event, callback) {
     TWILIO_API_SECRET
   );
 
+  // ユーザーのメールアドレス
+  accessToken.identity = event.identity;
+  const VideoGrant = AccessToken.VideoGrant;
+  const videoGrant = new VideoGrant({
+    room: event.room,
+  });
+
+  accessToken.addGrant(videoGrant);
+
+  console.log("accessToken:", accessToken);
+  console.log("identity:", event.identity);
+  console.log("room:", event.room);
+  console.log("event:", event);
+
   // レスポンス内容
   callback(null, { token: accessToken.toJwt() });
 };

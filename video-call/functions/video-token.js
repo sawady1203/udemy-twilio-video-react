@@ -25,6 +25,16 @@ exports.handler = function (context, event, callback) {
   console.log("room:", event.room);
   console.log("event:", event);
 
+  let response = new Twilio.Response();
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Method": "GET,POST",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+
+  response.setHeaders(headers);
+  response.setBody(accessToken.toJwt());
+
   // レスポンス内容
-  callback(null, { token: accessToken.toJwt() });
+  callback(null, response);
 };

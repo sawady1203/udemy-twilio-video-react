@@ -24,12 +24,13 @@ function TwilioVideos({ token, room }: Props) {
         console.log("connect to Twilio");
         console.log(room);
         console.log(localVideoRef);
-        // 接続に成功したらtrackをパブリッシュする
+        // 接続に成功したらtrackを作成する
         TwilioVideo.createLocalVideoTrack().then((track) => {
           localVideoRef.current?.appendChild(track.attach());
           console.log("localVideoRef:", localVideoRef);
         });
         function addParticipant(participant: TwilioVideo.RemoteParticipant) {
+          // 新しい参加者が入ってきたときにトラックを表示させる
           console.log("Adding a new Participant");
           participant.tracks.forEach((publication: any) => {
             if (publication.subscribed) {
@@ -39,7 +40,9 @@ function TwilioVideos({ token, room }: Props) {
             }
           });
         }
+        // roomの既存の参加者に新規参加者のトラックを追加する
         room.participants.forEach(addParticipant);
+        // 新規参加者が入ってきたときの処理を追加する
         room.on("participantConnected", addParticipant);
       })
       .catch((e) => {

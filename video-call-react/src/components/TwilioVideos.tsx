@@ -13,6 +13,16 @@ function TwilioVideos({ token, room }: Props) {
   const localVideoRef = useRef<HTMLDivElement>(null);
   const remoteVideoRef = useRef<HTMLDivElement>(null);
 
+  function appendNewPaticipant(
+    track: TwilioVideo.RemoteVideoTrack,
+    idnetity: string
+  ) {
+    const chat = document.createElement("div");
+    chat.setAttribute("id", idnetity);
+    chat.appendChild(track.attach());
+    remoteVideoRef.current?.appendChild(chat);
+  }
+
   useEffect(() => {
     console.info("Trying to connect to Twilio the the token: ", token);
     TwilioVideo.connect(token, {
@@ -29,21 +39,39 @@ function TwilioVideos({ token, room }: Props) {
           localVideoRef.current?.appendChild(track.attach());
           console.log("localVideoRef:", localVideoRef);
         });
-        function addParticipant(participant: TwilioVideo.RemoteParticipant) {
+
+        function removeParticipant(participant: TwilioVideo.RemoteParticipant) {
+          console.log(
+            "Removing participant with identity",
+            participant.identity
+          );
+          const elem = document.getElementById(participant.identity);
+          elem?.parentNode?.removeChild(elem);
+        }
+
+        function addParticipant(participant: TwilioVideo.Participant) {
           // 新しい参加者が入ってきたときにトラックを表示させる
           console.log("Adding a new Participant");
           participant.tracks.forEach((publication: any) => {
-            if (publication.subscribed) {
+            if (publication.isSubscribed) {
               const track = publication.track;
-              remoteVideoRef.current?.appendChild(track.attach());
+              appendNewPaticipant(track, participant.identity);
               console.log("Attached a track");
             }
           });
+          participant.on("trackSubscribed", (track) => {
+            appendNewPaticipant(track, participant.identity);
+          });
         }
+
         // roomの既存の参加者に新規参加者のトラックを追加する
         room.participants.forEach(addParticipant);
+
         // 新規参加者が入ってきたときの処理を追加する
         room.on("participantConnected", addParticipant);
+
+        // 参加者が部屋を離れたときの処理
+        room.on("participantDisconnected", removeParticipant);
       })
       .catch((e) => {
         console.log("An error happened", e);

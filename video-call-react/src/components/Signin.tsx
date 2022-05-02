@@ -1,15 +1,15 @@
 import axios from "axios";
-import React, { Dispatch, SetStateAction } from "react";
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 type Props = {
-  setToken: Dispatch<SetStateAction<undefined>>;
+  setToken: Dispatch<SetStateAction<string>>;
+  setName: Dispatch<SetStateAction<string>>;
+  setRoom: Dispatch<SetStateAction<string>>;
+  name: string;
+  room: string;
 };
 
-function Signin({ setToken }: Props) {
-  const [name, setName] = useState("");
-  const [room, setRoom] = useState("");
-
+function Signin({ setToken, setName, setRoom, name, room }: Props) {
   async function handleSubmit(
     event: React.MouseEvent<HTMLFormElement, MouseEvent>
   ) {
